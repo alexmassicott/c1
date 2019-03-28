@@ -11,7 +11,7 @@ export function register(app) {
 router.get('/', (req, res) => {
   const metrics = asArray(req.query.metric);
   const stats = asArray(req.query.stat);
-
+  console.log(metrics);
   const fromDateTime = new Date(req.query.fromDateTime);
   const toDateTime = new Date(req.query.toDateTime);
 

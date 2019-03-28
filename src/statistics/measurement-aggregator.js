@@ -9,5 +9,47 @@ import { Measurement } from '../measurements/measurement';
  * @return {*}
  */
 export function computeStats(measurements, metrics, stats) {
-  throw new HttpError(501);
+  const tmpArray = []
+
+  function getStats(metric, stats) {
+    let i = 0;
+    const metricArray = []
+
+    while (i < measurements.length) {
+      metricArray.push(measurements[i].getMetric(metric));
+      i++;
+    }
+
+    const jsonStats = stats.map(stat => constructStatistic(metric, stat, metricArray));
+    return jsonStats;
+  }
+
+  metrics.forEach(metric => tmpArray.push(...getStats(metric, stats)));
+  return tmpArray;
+}
+
+
+function constructStatistic(metric, stat, measurements) {
+  const data = new Object();
+  data.metric = metric;
+  data.stat = stat;
+  let value;
+
+  switch (stat) {
+    case "max":
+      value = Math.max(...measurements);
+      break;
+    case "min":
+      value = Math.min(...measurements);
+      break;
+    case "average":
+      value = measurements.reduce((a, b) => a + b, 0) / measurements.length;
+      break;
+    default:
+      value = false;
+      break;
+  }
+
+  if (value && value !== null) return { ...data, value: value };
+  /* error here if not in enum stat query */
 }

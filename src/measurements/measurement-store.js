@@ -3,6 +3,7 @@ import { HttpError } from '../errors';
 
 /**
  * DB to store measurements
+ * @type {Array}
  */
 const db = [];
 
@@ -19,6 +20,7 @@ export function add(measurement) {
  */
 export function fetch(timestamp) {
   const result = db.find(measurement => measurement.getTimestamp().getTime() == new Date(timestamp).getTime());
+
   return result;
 }
 
@@ -28,5 +30,7 @@ export function fetch(timestamp) {
  * @param {Date} end Upper bound for the query, exclusive
  */
 export function queryDateRange(from, to) {
-  throw new HttpError(501);
+  const results = db.filter(measurement => measurement.getTimestamp() >= from && measurement.getTimestamp() <= to);
+
+  return results;
 }
