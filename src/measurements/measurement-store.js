@@ -30,7 +30,7 @@ export function fetch(timestamp) {
  * @param {Date} end Upper bound for the query, exclusive
  */
 export function queryDateRange(from, to) {
-  const results = db.filter(measurement => measurement.getTimestamp() >= from && measurement.getTimestamp() <= to);
+  const results = db.filter(measurement => measurement.getTimestamp() >= from && measurement.getTimestamp() < to);
 
   return results;
 }

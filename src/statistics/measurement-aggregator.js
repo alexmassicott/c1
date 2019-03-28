@@ -16,11 +16,12 @@ export function computeStats(measurements, metrics, stats) {
     const metricArray = []
 
     while (i < measurements.length) {
-      metricArray.push(measurements[i].getMetric(metric));
+      const value = measurements[i].getMetric(metric);
+      if (value) metricArray.push(value);
       i++;
     }
 
-    const jsonStats = stats.map(stat => constructStatistic(metric, stat, metricArray));
+    const jsonStats = metricArray.length ? stats.map(stat => constructStatistic(metric, stat, metricArray)) : [];
     return jsonStats;
   }
 
@@ -34,22 +35,25 @@ function constructStatistic(metric, stat, measurements) {
   data.metric = metric;
   data.stat = stat;
   let value;
+  console.log(measurements);
+  if (measurements.length) {
+    switch (stat) {
+      case "max":
+        value = Math.max(...measurements);
+        break;
+      case "min":
+        value = Math.min(...measurements);
+        break;
+      case "average":
+        const average = measurements.reduce((a, b) => a + b, 0) / measurements.length;
+        value = Math.ceil(average * 100) / 100;
+        break;
+      default:
+        value = false;
+        break;
+    }
 
-  switch (stat) {
-    case "max":
-      value = Math.max(...measurements);
-      break;
-    case "min":
-      value = Math.min(...measurements);
-      break;
-    case "average":
-      value = measurements.reduce((a, b) => a + b, 0) / measurements.length;
-      break;
-    default:
-      value = false;
-      break;
+    return { ...data, value: value };
   }
-
-  if (value && value !== null) return { ...data, value: value };
   /* error here if not in enum stat query */
 }
